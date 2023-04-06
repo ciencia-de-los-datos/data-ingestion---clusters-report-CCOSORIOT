@@ -14,7 +14,9 @@ import pandas as pd
 
 def ingest_data():
 
-    Datos = pd.read_fwf("clusters_report.txt", skiprows=4, skipfooter=0, names=['cluster', 'cantidad_de_palabras_clave', 'porcentaje_de_palabras_clave', 'principales_palabras_clave'])
+    Datos = pd.read_fwf("clusters_report.txt", skiprows=4, skipfooter=0, header = None)
+    Datos.columns = ['cluster', 'cantidad_de_palabras_clave', 'porcentaje_de_palabras_clave', 'principales_palabras_clave']
+
     Datos['cluster'] = Datos['cluster'].fillna(method="ffill")
     Datos['principales_palabras_clave'] = Datos[['cluster','principales_palabras_clave']].groupby(['cluster'])['principales_palabras_clave'].transform(lambda x: ' '.join((x)))
     Datos = Datos.dropna()
@@ -26,5 +28,5 @@ def ingest_data():
     Datos['porcentaje_de_palabras_clave'] = Datos['porcentaje_de_palabras_clave'].str.replace(',','.')
     Datos['porcentaje_de_palabras_clave'] = pd.to_numeric(Datos['porcentaje_de_palabras_clave'])
     Datos = Datos.astype({'principales_palabras_clave':'string'})
-    
+
     return Datos
